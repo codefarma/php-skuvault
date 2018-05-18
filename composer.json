@@ -1,0 +1,20 @@
+{
+    "name": "codefarma/php-skuvault",
+    "description": "SkuVault PHP API Wrapper",
+    "type": "library",
+    "require": {
+        "guzzlehttp/guzzle": "~6.0"
+    },
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Kevin Carwile",
+            "email": "developer@codefarma.com"
+        }
+    ],
+	"autoload" : {
+			"psr-4" : {
+				"CodeFarma\\SkuVault\\": "lib/"
+			}
+	}
+}
