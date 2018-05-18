@@ -24,6 +24,11 @@ class Client
 	protected $http_client;
 	
 	/**
+	 * @var	string
+	 */ 
+	protected $base_url;
+	
+	/**
 	 * Set the http client
 	 *
 	 * @param	GuzzleClient		$client			The http client
@@ -43,7 +48,7 @@ class Client
 	{
 		if ( ! isset( $this->http_client ) ) {
 			$this->http_client = new GuzzleClient([
-				'base_uri' => 'https://app.skuvault.com/api/',
+				'base_uri' => $this->base_url,
 				'headers' => [
 					'User-Agent' => 'SkuVault PHP Library (codefarma/php-skuvault)',
 					'Content-Type' => 'application/json',
@@ -60,10 +65,11 @@ class Client
 	 *
 	 * @return	void
 	 */
-	public function __construct( $tenantToken=NULL, $userToken=NULL )
+	public function __construct( $tenantToken=NULL, $userToken=NULL, $base_url='https://app.skuvault.com/api/' )
 	{
 		$this->tenant_token = $tenantToken;
 		$this->user_token = $userToken;
+		$this->base_url = $base_url;
 	}
 	
 	/**
