@@ -5,6 +5,7 @@ namespace CodeFarma\SkuVault;
 use GuzzleHttp\Client as GuzzleClient;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Response;
+use GuzzleHttp\Exception\RequestException;
 
 class Client
 {
@@ -63,13 +64,20 @@ class Client
 	/**
 	 * Constructor
 	 *
+	 * @param	string		$tenantToken				The api tenant token
+	 * @param	string		$userToken					The api user token
+	 * @param	bool		$use_staging				Use the staging api instead of production
 	 * @return	void
 	 */
-	public function __construct( $tenantToken=NULL, $userToken=NULL, $base_url='https://app.skuvault.com/api/' )
+	public function __construct( $tenantToken=NULL, $userToken=NULL, $use_staging=FALSE )
 	{
 		$this->tenant_token = $tenantToken;
 		$this->user_token = $userToken;
-		$this->base_url = $base_url;
+		$this->base_url = 'https://app.skuvault.com/api/';
+		
+		if ( $use_staging ) {
+			$this->base_url = 'https://staging.skuvault.com/api/';
+		}
 	}
 	
 	/**
@@ -85,16 +93,30 @@ class Client
 	}
 	
 	/**
+	 * Set api tokens
+	 *
+	 * @param	string			$tenant_token			Skuvault api tenant token
+	 * @param	string			$user_token				Skuvault api user token
+	 * @return	array
+	 */
+	public function setTokens( $tenant_token, $user_token )
+	{
+		$this->tenant_token = $tenant_token;
+		$this->user_token = $user_token;
+	}
+	
+	/**
 	 * Get the utc date for submission as api param
 	 *
 	 * @param	mixed			$date			A string, timestamp, or datetime object
-	 * @return	string
+	 * @return	DateTime
 	 */
 	public static function utcDate( $date )
 	{
 		if ( is_numeric( $date ) ) {
+			$ts = intval( $date );
 			$date = new \DateTime();
-			$date->setTimestamp( intval( $date ) );
+			$date->setTimestamp( $ts );
 		}
 		else if ( is_string( $date ) ) {
 			$ts = strtotime( $date );
@@ -106,6 +128,7 @@ class Client
 		}
 		
 		$date->setTimezone( new \DateTimeZone("UTC") );
+		
 		return $date;
 	}
 	
@@ -134,16 +157,6 @@ class Client
 		
 		$request = new Request( $method, $endpoint );
 		$response = $this->getHttpClient()->send( $request, $params );
-		
-		/* Throw exception on bad requests */
-		if ( $response->getStatusCode() != 200 ) 
-		{
-			$exception = new RequestException( $response->getReasonPhrase() );
-			$exception->setRequest( $request );
-			$exception->setResponse( $response );
-			
-			throw $exception;
-		}
 		
 		return $response;
 	}
