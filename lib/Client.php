@@ -147,7 +147,7 @@ class Client
 	 * @return	Response
 	 * @throws	RequestException
 	 */
-	protected function makeRequest( $method, $endpoint, $payload=[], $params=[] )
+	protected function makeRequest( $method, $endpoint, $payload=[], $params=[ 'timeout' => 20 ] )
 	{
 		/* Compose json payload with api auth */
 		$params['json'] = array_merge( array( 
