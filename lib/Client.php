@@ -587,7 +587,7 @@ class Client
 		}
 		
 		$params['FromDate'] = static::apiTimeFormat( static::utcDate( $from_date ) );
-		$params['ToDate'] = static::apiTimeFormat( static::uctDate( $to_date ) );
+		$params['ToDate'] = static::apiTimeFormat( static::utcDate( $to_date ) );
 		
 		return $this->makeRequest( 'POST', 'inventory/getTransactions', $params );
 	}
@@ -858,13 +858,16 @@ class Client
 	/**
 	 * Update external warehouse quantities
 	 *
+	 * Any SKU in an external warehouse that is omitted from the next request will be removed from said warehouse.
+	 * 
+	 * @param	string          $warehouse_id                The external warehouse ID
 	 * @param   array           $quantities                  An array of quantities to update
 	 * @return	Response
 	 * @throws  RequestException
 	 */
-	public function updateExternalWarehouseQuantities( $quantities )
+	public function updateExternalWarehouseQuantities( $warehouse_id, $quantities )
 	{
-		return $this->makeRequest( 'POST', 'inventory/updateExternalWarehouseQuantities', [ 'Quantities' => $quantities ] );
+		return $this->makeRequest( 'POST', 'inventory/updateExternalWarehouseQuantities', [ 'WarehouseId' => $warehouse_id, 'Quantities' => $quantities ] );
 	}
 
 	/**
