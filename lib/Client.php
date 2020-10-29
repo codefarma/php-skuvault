@@ -946,5 +946,38 @@ class Client
 	{
 		return $this->makeRequest( 'POST', 'sales/updateShipments', [ 'Shipments' => $shipments ] );
 	}
+
+	/**
+	 * Get Lot Location Quantity
+	 * 
+	 * @param	string			$file				The file path to be read
+	 * @return	array
+	 * @throws  Exception
+	 */
+	public function getLotQuantitiesByLocation( $file )
+	{
+		$items = $fields = array(); $i = 0;
+		if (($handle = fopen($file, 'r')) !== FALSE) { // Check the resource is valid
+			while (($row = fgetcsv($handle, 4096)) !== false) {
+				if (empty($fields)) {
+					foreach( $row as $k ){
+						$k = preg_replace('/\s*/', '', ucwords($k) );
+						array_push($fields, $k);
+					}
+					continue;
+				}
+				foreach ($row as $k=>$value) {
+					$items[$i][$fields[$k]] = $value;
+				}
+				$i++;
+			}
+			if (!feof($handle)) {
+				throw new Exception('Error: unexpected fgets() fail.');
+			}
+			fclose($handle);
+
+			return $items;
+		}
+	}
 	
 }
