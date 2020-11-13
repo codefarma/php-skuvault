@@ -951,17 +951,19 @@ class Client
 	 * Get Lot Location Quantity
 	 * 
 	 * @param	string			$file				The file path to be read
+	 * @param	$array  		$query				The query to execute
 	 * @return	array
 	 * @throws  Exception
 	 */
-	public function getLotQuantitiesByLocation( $file )
+	public function getLotQuantitiesByLocation( $file, $query )
 	{
 		$items = $fields = array(); $i = 0;
 		if (($handle = fopen($file, 'r')) !== FALSE) { // Check the resource is valid
 			while (($row = fgetcsv($handle, 4096)) !== false) {
 				if (empty($fields)) {
 					foreach( $row as $k ){
-						$k = preg_replace('/\s*/', '', ucwords($k) );
+						$k = preg_replace('/^[\pZ\pC]+|[\pZ\pC]+$/u','', $k);
+						$k = preg_replace('/\s*/', '', ucwords($k));
 						array_push($fields, $k);
 					}
 					continue;
@@ -976,7 +978,7 @@ class Client
 			}
 			fclose($handle);
 
-			return $items;
+			return array_slice($items, $query['PageSize'] * $query['PageNumber'], $query['PageSize'] );
 		}
 	}
 	
